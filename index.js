@@ -1,7 +1,45 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const joi = require('joi');
 const app = express();
+
+const schema = joi
+  .array()
+  .items(joi
+    .object()
+    .keys({
+      id: joi.number(),
+      accelerometer: joi
+        .object()
+        .keys({
+          x: joi.number(),
+          y: joi.number(),
+          z: joi.number(),
+        }),
+      gyroscope: joi
+        .object()
+        .keys({
+          x: joi.number(),
+          y: joi.number(),
+          z: joi.number(),
+        }),
+      magnetometer: joi
+        .object()
+        .keys({
+          x: joi.number(),
+          y: joi.number(),
+          z: joi.number(),
+        }),
+      position: joi
+        .object()
+        .keys({
+          heading: joi.number(),
+          speed: joi.number(),
+        }),
+      activity: joi.string()
+    })
+  );
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -21,6 +59,12 @@ app.post('/motion', (req, res) => {
 
   let data = req.body;
   let parsedData = '';
+
+  const result = joi.validate(data, schema);
+  if (result.error) {
+    res.status(400).end('Invalid data');
+    return;
+  }
 
   for (let m of data) {
     let {id, accelerometer, gyroscope, magnetometer, position, activity} = m;
