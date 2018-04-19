@@ -8,6 +8,13 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+app.get('/motion', (req, res) => {
+
+  console.log('[+] Request for motion data!');
+
+  res.sendFile('./motionData.csv', { root: __dirname });
+});
+
 app.post('/motion', (req, res) => {
 
   console.log('[+] Received motion data!');
